@@ -2,6 +2,7 @@ pipeline {
     agent {
         docker { image 'amazoncorretto:11-alpine-jdk' }
     }
+    options { timeout(time: 5) }
     stages {
         stage ("Compile") {
             steps {
@@ -13,7 +14,7 @@ pipeline {
                 sh "./gradlew test"
             }
         }
-        stage ("Code coverage") {
+        stage ("Code coverage test") {
             steps {
                 sh "./gradlew jacocoTestReport"
                 publishHTML (target: [
