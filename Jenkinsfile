@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        docker { image 'amazoncorretto:11-alpine-jdk' }
+        docker { image 'amazoncorretto:11' }
     }
     options { timeout(time: 5) }
     stages {
@@ -29,7 +29,7 @@ pipeline {
     }
     post {
         success {
-            sh 'curl "https://api.GitHub.com/repos/JBetoReyes/Calculator/statuses/$GIT_COMMIT?access_token=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" -H "Content-Type: application/json" -X POST -d "{\"state\": \"success\",\"context\": \"continuous-integration/jenkins\", \"description\": \"Jenkins\", \"target_url\": \"http://54.183.190.35:8080/job/Calculator/$BUILD_NUMBER/console\"}"'
+            sh 'curl "https://api.GitHub.com/repos/JBetoReyes/Calculator/statuses/b326c46?access_token=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" -H "Content-Type: application/json" -X POST -d "{\"state\": \"success\",\"context\": \"continuous-integration/jenkins\", \"description\": \"Jenkins\", \"target_url\": \"http://54.183.190.35:8080/job/Calculator/1/console\"}"'
         }
     }
 }
