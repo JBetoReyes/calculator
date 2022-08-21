@@ -6,6 +6,10 @@ pipeline {
     stages {
         stage ("Compile") {
             steps {
+                  withCredentials([string(credentialsId: 'github-jenkins-integration-token', variable: 'TOKEN')]) {
+                    sh "echo $TOKEN"
+                    sh "echo ${TOKEN}"
+                  }
                 sh "./gradlew compileJava"
             }
         }
