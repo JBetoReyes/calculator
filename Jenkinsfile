@@ -14,7 +14,7 @@ pipeline {
                 sh "./gradlew test"
             }
         }
-        stage ("Code coverage") {
+        stage ("Code coverage test") {
             steps {
                 sh "./gradlew jacocoTestReport"
                 publishHTML (target: [
