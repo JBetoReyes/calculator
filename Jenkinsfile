@@ -13,7 +13,7 @@ pipeline {
                           -H "Accept: application/vnd.github+json" \
                           -H "Authorization: token $TOKEN" \
                           https://api.github.com/repos/jbetoreyes/calculator/check-runs \
-                          -d '{"name":"Compile","head_sha":$GIT_COMMIT,"status":"in_progress","external_id":"42","started_at":"2018-05-04T01:14:52Z","output":{"title":"Mighty Readme report","summary":"","text":""}}'
+                          -d '{"name":"Compile","head_sha": $GIT_COMMIT ,"status":"in_progress","external_id":"42","started_at":"2018-05-04T01:14:52Z","output":{"title":"Mighty Readme report","summary":"","text":""}}'
                     '''
                     sh "echo ${TOKEN}"
                   }
