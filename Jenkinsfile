@@ -27,4 +27,13 @@ pipeline {
             }
         }
     }
+    post {
+        success {
+            curl "https://api.GitHub.com/repos/JBetoReyes/Calculator/statuses/$GIT_COMMIT?access_token=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" \
+              -H "Content-Type: application/json" \
+              -X POST \
+              -d "{\"state\": \"success\",\"context\": \"continuous-integration/jenkins\", \"description\": \"Jenkins\", \"target_url\": \"http://54.183.190.35:8080/job/Calculator/$BUILD_NUMBER/console\"}"
+
+        }
+    }
 }
