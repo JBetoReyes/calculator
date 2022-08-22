@@ -71,12 +71,12 @@ pipeline {
     }
     post {
         failure {
-            echo "failed stage: ${failedStage}"
-            publishChecks name: 'Compile', conclusion: 'FAILURE'
-            publishChecks name: 'Code coverage', conclusion: 'FAILURE'
-            publishChecks name: 'Package', conclusion: 'FAILURE'
-            publishChecks name: 'Docker build', conclusion: 'FAILURE'
-            publishChecks name: 'Docker push', conclusion: 'FAILURE'
+            publishChecks name: 'Compile'
+            publishChecks name: 'Code coverage'
+            publishChecks name: 'Package'
+            publishChecks name: 'Docker build'
+            publishChecks name: 'Docker push'
+            publishChecks name: "${failedStage}", conclusion: 'FAILURE'
         }
     }
 }
