@@ -6,18 +6,15 @@ pipeline {
     stages {
         stage ("Compile") {
             steps {
-                withChecks(name: 'injected name') {
-                    // some other steps that will extract the name
-                    publishChecks name: 'Compile', status: 'QUEUED'
-                    publishChecks name: 'Unit Test', status: 'QUEUED'
-                    publishChecks name: 'Code coverage', status: 'QUEUED'
-                    publishChecks name: 'Compile', status: 'IN_PROGRESS'
-                    sh "./gradlew compileJava"
-                    publishChecks name: 'Compile', title: 'Compile', summary: 'gradlew compilation',
-                        text: 'running ./gradlew compileJava',
-                        detailsURL: '',
-                        actions: [[label:'gradlew', description:'compileJava', identifier:'gradlew']]
-                }
+                publishChecks name: 'Compile', status: 'QUEUED'
+                publishChecks name: 'Unit Test', status: 'QUEUED'
+                publishChecks name: 'Code coverage', status: 'QUEUED'
+                publishChecks name: 'Compile', status: 'IN_PROGRESS'
+                sh "./gradlew compileJava"
+                publishChecks name: 'Compile', title: 'Compile', summary: 'gradlew compilation',
+                    text: 'running ./gradlew compileJava',
+                    detailsURL: '',
+                    actions: [[label:'gradlew', description:'compileJava', identifier:'gradlew']]
             }
         }
         stage("Unit Test") {
