@@ -7,6 +7,9 @@ pipeline {
                 publishChecks name: 'Compile', status: 'QUEUED'
                 publishChecks name: 'Unit Test', status: 'QUEUED'
                 publishChecks name: 'Code coverage', status: 'QUEUED'
+                publishChecks name: 'Package', status: 'QUEUED'
+                publishChecks name: 'Docker build', status: 'QUEUED'
+                publishChecks name: 'Docker push', status: 'QUEUED'
                 publishChecks name: 'Compile', status: 'IN_PROGRESS'
                 sh "./gradlew compileJava"
                 publishChecks name: 'Compile', title: 'Compile', summary: 'gradlew compilation',
@@ -38,17 +41,23 @@ pipeline {
         }
         stage ("Package") {
             steps {
+                publishChecks name: 'Package', status: 'IN_PROGRESS'
                 sh "./gradlew build"
+                publishChecks name: 'Package'
             }
         }
         stage ("Docker build") {
             steps {
-                sh "docker build -t jbetoreyes/calculator:${env.build}"
+                publishChecks name: 'Docker build', status: 'IN_PROGRESS'
+                sh "docker build -t jbetoreyes/calculator:${currentBuild.number} ."
+                publishChecks name: 'Docker build'
             }
         }
         stage ("Docker push") {
             steps {
+                publishChecks name: 'Docker push', status: 'IN_PROGRESS'
                 sh "docker push jbetoreyes/calculator"
+                publishChecks name: 'Docker build'
             }
         }
     }
