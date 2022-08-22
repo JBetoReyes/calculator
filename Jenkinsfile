@@ -8,7 +8,10 @@ pipeline {
                 publishChecks name: 'Unit Test', status: 'QUEUED'
                 publishChecks name: 'Code coverage', status: 'QUEUED'
                 publishChecks name: 'Compile', status: 'IN_PROGRESS'
-                sh "./gradlew compileJava"
+                def appImage = docker.build("jbetoreyes/calculator:${env.BUILD_ID}")
+                customImage.inside {
+                    sh "./gradlew compileJava"
+                }
                 publishChecks name: 'Compile', title: 'Compile', summary: 'gradlew compilation',
                     text: 'running ./gradlew compileJava',
                     detailsURL: '',
@@ -18,7 +21,10 @@ pipeline {
         stage("Unit Test") {
             steps {
                 publishChecks name: 'Unit Test', status: 'IN_PROGRESS'
-                sh "./gradlew test"
+                def appImage = docker.build("jbetoreyes/calculator:${env.BUILD_ID}")
+                customImage.inside {
+                    sh "./gradlew test"
+                }
                 publishChecks name: 'Unit Test'
             }
         }
