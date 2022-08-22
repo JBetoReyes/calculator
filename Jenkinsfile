@@ -36,5 +36,20 @@ pipeline {
                 publishChecks name: 'Code coverage'
             }
         }
+        stage ("Package") {
+            steps {
+                sh "./gradlew build"
+            }
+        }
+        stage ("Docker build") {
+            steps {
+                sh "docker build -t jbetoreyes/calculator:${env.build}"
+            }
+        }
+        stage ("Docker push") {
+            steps {
+                sh "docker push jbetoreyes/calculator"
+            }
+        }
     }
 }
