@@ -61,4 +61,13 @@ pipeline {
             }
         }
     }
+    post {
+        failure {
+            publishChecks name: 'Compile', conclusion: 'FAILURE'
+            publishChecks name: 'Code coverage', conclusion: 'FAILURE'
+            publishChecks name: 'Package', conclusion: 'FAILURE'
+            publishChecks name: 'Docker build', conclusion: 'FAILURE'
+            publishChecks name: 'Docker push', conclusion: 'FAILURE'
+        }
+    }
 }
