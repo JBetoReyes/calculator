@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage ("Compile") {
             steps {
-                publishChecks name: 'Compile', status: 'in_progress'
+                publishChecks name: 'Compile', status: 'IN_PROGRESS'
                 sh "./gradlew compileJava"
                 publishChecks name: 'Compile', title: 'Compile', summary: 'gradlew compilation',
                     text: 'running ./gradlew compileJava',
