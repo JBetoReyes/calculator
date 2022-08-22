@@ -6,7 +6,6 @@ pipeline {
             agent {
                 docker {
                     image 'openjdk:11-jre'
-                    reuseNode true
                 }
             }
             steps {
@@ -25,7 +24,6 @@ pipeline {
             agent {
                 docker {
                     image 'openjdk:11-jre'
-                    reuseNode true
                 }
             }
             steps {
@@ -38,7 +36,6 @@ pipeline {
             agent {
                 docker {
                     image 'openjdk:11-jre'
-                    reuseNode true
                 }
             }
             steps {
