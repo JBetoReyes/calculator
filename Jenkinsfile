@@ -1,4 +1,5 @@
 pipeline {
+    agent any
     options { timeout(time: 5) }
     stages {
         stage ("Compile") {
