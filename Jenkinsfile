@@ -1,4 +1,11 @@
-def failedStage = ""
+def stages = [
+    'Compile',
+    'Unit Test',
+    'Code coverage',
+    'Package',
+    'Docker build',
+    'Docker push'
+]
 
 pipeline {
     agent any
@@ -7,12 +14,9 @@ pipeline {
         stage ("Compile") {
             steps {
                 script { failedStage = env.STAGE_NAME }
-                publishChecks name: 'Compile', status: 'QUEUED'
-                publishChecks name: 'Unit Test', status: 'QUEUED'
-                publishChecks name: 'Code coverage', status: 'QUEUED'
-                publishChecks name: 'Package', status: 'QUEUED'
-                publishChecks name: 'Docker build', status: 'QUEUED'
-                publishChecks name: 'Docker push', status: 'QUEUED'
+                map.each { entry ->
+                    publishChecks name: "${entry.value}", status: 'QUEUED'
+                }
                 publishChecks name: 'Compile', status: 'IN_PROGRESS'
                 sh "./gradlew compileJava"
                 publishChecks name: 'Compile', title: 'Compile', summary: 'gradlew compilation',
@@ -75,7 +79,7 @@ pipeline {
             publishChecks name: 'Code coverage'
             publishChecks name: 'Package'
             publishChecks name: 'Docker build'
-            publishChecks name: 'Docker push'
+            publishChecks name: 'Docker push', conclusion:
             publishChecks name: "${failedStage}", conclusion: 'FAILURE'
         }
     }
