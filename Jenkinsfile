@@ -3,11 +3,6 @@ pipeline {
     options { timeout(time: 5) }
     stages {
         stage ("Compile") {
-            agent {
-                docker {
-                    image 'amazoncorretto:11-alpine-jdk'
-                }
-            }
             steps {
                 publishChecks name: 'Compile', status: 'QUEUED'
                 publishChecks name: 'Unit Test', status: 'QUEUED'
@@ -21,11 +16,6 @@ pipeline {
             }
         }
         stage("Unit Test") {
-            agent {
-                docker {
-                    image 'openjdk:11-jre'
-                }
-            }
             steps {
                 publishChecks name: 'Unit Test', status: 'IN_PROGRESS'
                 sh "./gradlew test"
@@ -33,11 +23,6 @@ pipeline {
             }
         }
         stage ("Code coverage") {
-            agent {
-                docker {
-                    image 'openjdk:11-jre'
-                }
-            }
             steps {
                 publishChecks name: 'Code coverage', status: 'IN_PROGRESS'
                 sh "./gradlew jacocoTestReport"
