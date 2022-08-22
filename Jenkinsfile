@@ -5,7 +5,7 @@ pipeline {
         stage ("Compile") {
             agent {
                 docker {
-                    image 'openjdk:11-jre'
+                    image 'amazoncorretto:11-alpine-jdk'
                 }
             }
             steps {
