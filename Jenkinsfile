@@ -63,6 +63,7 @@ pipeline {
     }
     post {
         failure {
+            echo "Failed stage names: " + failedStages.displayName
             publishChecks name: 'Compile', conclusion: 'FAILURE'
             publishChecks name: 'Code coverage', conclusion: 'FAILURE'
             publishChecks name: 'Package', conclusion: 'FAILURE'
