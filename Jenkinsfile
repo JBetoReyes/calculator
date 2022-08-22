@@ -1,9 +1,12 @@
+def failedStage = ""
+
 pipeline {
     agent any
     options { timeout(time: 5) }
     stages {
         stage ("Compile") {
             steps {
+                script { failedStage = env.STAGE_NAME }
                 publishChecks name: 'Compile', status: 'QUEUED'
                 publishChecks name: 'Unit Test', status: 'QUEUED'
                 publishChecks name: 'Code coverage', status: 'QUEUED'
@@ -20,6 +23,7 @@ pipeline {
         }
         stage("Unit Test") {
             steps {
+                script { failedStage = env.STAGE_NAME }
                 publishChecks name: 'Unit Test', status: 'IN_PROGRESS'
                 sh "./gradlew test"
                 publishChecks name: 'Unit Test'
@@ -27,6 +31,7 @@ pipeline {
         }
         stage ("Code coverage") {
             steps {
+                script { failedStage = env.STAGE_NAME }
                 publishChecks name: 'Code coverage', status: 'IN_PROGRESS'
                 sh "./gradlew jacocoTestReport"
                 publishHTML (target: [
@@ -41,6 +46,7 @@ pipeline {
         }
         stage ("Package") {
             steps {
+                script { failedStage = env.STAGE_NAME }
                 publishChecks name: 'Package', status: 'IN_PROGRESS'
                 sh "./gradlew build"
                 publishChecks name: 'Package'
@@ -48,6 +54,7 @@ pipeline {
         }
         stage ("Docker build") {
             steps {
+                script { failedStage = env.STAGE_NAME }
                 publishChecks name: 'Docker build', status: 'IN_PROGRESS'
                 sh "docker build -t jbetoreyes/calculator:${currentBuild.number} ."
                 publishChecks name: 'Docker build'
@@ -55,6 +62,7 @@ pipeline {
         }
         stage ("Docker push") {
             steps {
+                script { failedStage = env.STAGE_NAME }
                 publishChecks name: 'Docker push', status: 'IN_PROGRESS'
                 sh "docker push jbetoreyes/calculator"
                 publishChecks name: 'Docker build'
@@ -63,7 +71,7 @@ pipeline {
     }
     post {
         failure {
-            echo "Failed stage names: " + failedStages.displayName
+            echo "failed stage: ${failedStage}"
             publishChecks name: 'Compile', conclusion: 'FAILURE'
             publishChecks name: 'Code coverage', conclusion: 'FAILURE'
             publishChecks name: 'Package', conclusion: 'FAILURE'
