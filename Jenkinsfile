@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage ("Compile") {
             steps {
-                  withCredentials([string(credentialsId: 'github-jenkins-integration-token', variable: 'TOKEN')]) {
+                  withCredentials([string(credentialsId: 'jenkins-github-app-integration-token', variable: 'TOKEN')]) {
                     sh '''
                         curl \
                           -X POST \
