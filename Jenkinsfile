@@ -6,10 +6,7 @@ pipeline {
     stages {
         stage ("Compile") {
             steps {
-                publishChecks name: 'Compile', title: 'Pipeline Check', summary: 'check',
-                    text: 'test',
-                    detailsURL: '',
-                    actions: [[label:'an-user', description:'actions ', identifier:'identifier']]
+                publishChecks name: 'Compile', status: 'in_progress'
                   withCredentials([string(credentialsId: 'jenkins-github-app-integration-token', variable: 'TOKEN')]) {
                     sh '''
                         curl \
@@ -22,6 +19,10 @@ pipeline {
                     sh "echo ${TOKEN}"
                   }
                 sh "./gradlew compileJava"
+                publishChecks name: 'Compile', title: 'Compile', summary: 'gradlew compilation',
+                    text: 'running ./gradlew compileJava',
+                    detailsURL: '',
+                    actions: [[label:'an-user', description:'actions ', identifier:'identifier']]
             }
         }
         stage("Unit Test") {
