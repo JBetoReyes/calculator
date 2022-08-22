@@ -25,6 +25,7 @@ pipeline {
                     text: 'running ./gradlew compileJava',
                     detailsURL: '',
                     actions: [[label:'gradlew', description:'compileJava', identifier:'gradlew']]
+                script { stagesMap.remove(0) }
             }
         }
         stage("Unit Test") {
@@ -33,6 +34,7 @@ pipeline {
                 publishChecks name: 'Unit Test', status: 'IN_PROGRESS'
                 sh "./gradlew test"
                 publishChecks name: 'Unit Test'
+                script { stagesMap.remove(0) }
             }
         }
         stage ("Code coverage") {
@@ -48,6 +50,7 @@ pipeline {
                 ])
                 sh "./gradlew jacocoTestCoverageVerification"
                 publishChecks name: 'Code coverage'
+                script { stagesMap.remove(0) }
             }
         }
         stage ("Package") {
@@ -56,6 +59,7 @@ pipeline {
                 publishChecks name: 'Package', status: 'IN_PROGRESS'
                 sh "./gradlew build"
                 publishChecks name: 'Package'
+                script { stagesMap.remove(0) }
             }
         }
         stage ("Docker build") {
@@ -64,6 +68,7 @@ pipeline {
                 publishChecks name: 'Docker build', status: 'IN_PROGRESS'
                 sh "docker build -t jbetoreyes/calculator:${currentBuild.number} ."
                 publishChecks name: 'Docker build'
+                script { stagesMap.remove(0) }
             }
         }
         stage ("Docker push") {
@@ -72,11 +77,17 @@ pipeline {
                 publishChecks name: 'Docker push', status: 'IN_PROGRESS'
                 sh "docker push jbetoreyes/calculator"
                 publishChecks name: 'Docker build'
+                script { stagesMap.remove(0) }
             }
         }
     }
     post {
         failure {
+            script {
+                stagesMap.each { value ->
+                    publishChecks name: "${value}", status: 'CANCELLED'
+                }
+            }
             publishChecks name: "${failedStage}", conclusion: 'FAILURE'
         }
     }
