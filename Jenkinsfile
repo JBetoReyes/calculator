@@ -1,4 +1,4 @@
-def stages = [
+def stagesMap = [
     'Compile',
     'Unit Test',
     'Code coverage',
@@ -14,7 +14,7 @@ pipeline {
         stage ("Compile") {
             steps {
                 script { failedStage = env.STAGE_NAME }
-                map.each { value ->
+                stagesMap.each { value ->
                     publishChecks name: "${value}", status: 'QUEUED'
                 }
                 publishChecks name: 'Compile', status: 'IN_PROGRESS'
