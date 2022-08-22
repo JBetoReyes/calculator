@@ -75,11 +75,6 @@ pipeline {
     }
     post {
         failure {
-            publishChecks name: 'Compile'
-            publishChecks name: 'Code coverage'
-            publishChecks name: 'Package'
-            publishChecks name: 'Docker build'
-            publishChecks name: 'Docker push', conclusion:
             publishChecks name: "${failedStage}", conclusion: 'FAILURE'
         }
     }
