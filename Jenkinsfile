@@ -7,6 +7,8 @@ pipeline {
         stage ("Compile") {
             steps {
                 publishChecks name: 'Compile', status: 'IN_PROGRESS'
+                publishChecks name: 'Unit Test', status: 'QUEUED'
+                publishChecks name: 'Code coverage', status: 'QUEUED'
                 sh "./gradlew compileJava"
                 publishChecks name: 'Compile', title: 'Compile', summary: 'gradlew compilation',
                     text: 'running ./gradlew compileJava',
@@ -16,11 +18,14 @@ pipeline {
         }
         stage("Unit Test") {
             steps {
+                publishChecks name: 'Unit Test', status: 'IN_PROGRESS'
                 sh "./gradlew test"
+                publishChecks name: 'Unit Test'
             }
         }
         stage ("Code coverage") {
             steps {
+                publishChecks name: 'Code coverage', status: 'IN_PROGRESS'
                 sh "./gradlew jacocoTestReport"
                 publishHTML (target: [
                     reportDir: 'build/reports/jacoco/test/html',
@@ -29,6 +34,7 @@ pipeline {
 
                 ])
                 sh "./gradlew jacocoTestCoverageVerification"
+                publishChecks name: 'Code coverage'
             }
         }
     }
