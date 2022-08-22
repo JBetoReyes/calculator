@@ -6,14 +6,15 @@ pipeline {
     stages {
         stage ("Compile") {
             steps {
-                publishChecks name: 'Compile', status: 'IN_PROGRESS'
+                publishChecks name: 'Compile', status: 'QUEUED'
                 publishChecks name: 'Unit Test', status: 'QUEUED'
                 publishChecks name: 'Code coverage', status: 'QUEUED'
+                publishChecks name: 'Compile', status: 'IN_PROGRESS'
                 sh "./gradlew compileJava"
                 publishChecks name: 'Compile', title: 'Compile', summary: 'gradlew compilation',
                     text: 'running ./gradlew compileJava',
                     detailsURL: '',
-                    actions: [[label:'an-user', description:'actions ', identifier:'identifier']]
+                    actions: [[label:'gradlew', description:'compileJava', identifier:'gradlew']]
             }
         }
         stage("Unit Test") {
