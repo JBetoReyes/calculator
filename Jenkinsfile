@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        docker { image 'amazoncorretto:11' }
+        docker { image 'amazoncorretto:11-alpine-jdk' }
     }
     options { timeout(time: 5) }
     stages {
