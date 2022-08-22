@@ -13,9 +13,11 @@ pipeline {
     stages {
         stage ("Compile") {
             steps {
-                script { failedStage = env.STAGE_NAME }
-                stagesMap.each { value ->
-                    publishChecks name: "${value}", status: 'QUEUED'
+                script {
+                    failedStage = env.STAGE_NAME
+                    stagesMap.each { value ->
+                        publishChecks name: "${value}", status: 'QUEUED'
+                    }
                 }
                 publishChecks name: 'Compile', status: 'IN_PROGRESS'
                 sh "./gradlew compileJava"
