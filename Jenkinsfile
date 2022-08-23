@@ -88,7 +88,7 @@ pipeline {
         stage ("Deploy to staging") {
             steps {
                 publishChecks name: 'Deploy to staging', status: 'IN_PROGRESS'
-                sh "docker run -d --rm -p 8765:8080 --name calculator-build-${currentBuild.number} jbetoreyes/calculator:${currentBuild.number}"
+                sh "docker run -d --rm -p 8765:8080 --name calculator jbetoreyes/calculator:${currentBuild.number}"
                 publishChecks name: 'Deploy to staging'
                 script { stagesMap.remove(0) }
             }
@@ -113,7 +113,7 @@ pipeline {
             publishChecks name: "${failedStage}", conclusion: 'FAILURE',  status: 'COMPLETED'
         }
         always {
-            sh "docker stop calculator-build-${currentBuild.number}"
+            sh "docker stop calculator"
         }
     }
 }
