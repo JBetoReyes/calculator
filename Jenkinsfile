@@ -80,7 +80,7 @@ pipeline {
                   sh "docker login -u ${USER} -p ${PASSWORD}"
                 }
                 sh "docker push jbetoreyes/calculator:${currentBuild.number}"
-                publishChecks name: 'Docker build'
+                publishChecks name: 'Docker push'
                 script { stagesMap.remove(0) }
             }
         }
@@ -89,6 +89,14 @@ pipeline {
                 publishChecks name: 'Deploy to staging', status: 'IN_PROGRESS'
                 sh "docker run -d --rm -p 8765:8080 --name calculator-build-${currentBuild.number} jbetoreyes/calculator:${currentBuild.number}"
                 publishChecks name: 'Deploy to staging'
+            }
+        }
+        stage ("Acceptance test") {
+            steps {
+                publishChecks name: 'Acceptance test', status: 'IN_PROGRESS'
+                sleep 60
+                sh "chmod +x acceptance_test.sh && ./acceptance_test.sh"
+                publishChecks name: 'Acceptance test'
             }
         }
     }
