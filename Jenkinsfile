@@ -85,9 +85,11 @@ pipeline {
             }
         }
         stage ("Deploy to staging") {
-            publishChecks name: 'Deploy to staging', status: 'IN_PROGRESS'
-            sh 'docker run -d --rm -p 8765:8080 --name calculator:${currentBuild.number} jbetoreyes/calculator:${currentBuild.number}'
-            publishChecks name: 'Deploy to staging'
+            steps {
+                publishChecks name: 'Deploy to staging', status: 'IN_PROGRESS'
+                sh 'docker run -d --rm -p 8765:8080 --name calculator:${currentBuild.number} jbetoreyes/calculator:${currentBuild.number}'
+                publishChecks name: 'Deploy to staging'
+            }
         }
     }
     post {
