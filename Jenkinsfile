@@ -75,10 +75,10 @@ pipeline {
             steps {
                 script { failedStage = env.STAGE_NAME }
                 publishChecks name: 'Docker push', status: 'IN_PROGRESS'
-                withCredentials([file(credentialsId: 'docker-hub-integration', usernameVariable: 'USER', passwordVariable: 'PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-integration', usernameVariable: 'USER', passwordVariable: 'PASSWORD')]) {
                   sh "docker login -u ${USER} -p ${PASSWORD}"
-                  sh "docker push jbetoreyes/calculator:${currentBuild.number}"
                 }
+                sh "docker push jbetoreyes/calculator:${currentBuild.number}"
                 publishChecks name: 'Docker build'
                 script { stagesMap.remove(0) }
             }
