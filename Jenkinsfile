@@ -98,7 +98,7 @@ pipeline {
             steps {
                 script { failedStage = env.STAGE_NAME }
                 publishChecks name: 'Acceptance test', status: 'IN_PROGRESS'
-                sleep 300
+                sleep 60
                 sh "chmod +x acceptance_test.sh && ./acceptance_test.sh"
                 publishChecks name: 'Acceptance test'
                 script { stagesMap.remove(0) }
