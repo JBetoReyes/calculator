@@ -75,7 +75,7 @@ pipeline {
             steps {
                 script { failedStage = env.STAGE_NAME }
                 publishChecks name: 'Docker push', status: 'IN_PROGRESS'
-                sh "docker push jbetoreyes/calculator"
+                sh "docker push jbetoreyes/calculator:${currentBuild.number}"
                 publishChecks name: 'Docker build'
                 script { stagesMap.remove(0) }
             }
