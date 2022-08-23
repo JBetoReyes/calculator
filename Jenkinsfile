@@ -87,6 +87,7 @@ pipeline {
         }
         stage ("Deploy to staging") {
             steps {
+                script { failedStage = env.STAGE_NAME }
                 publishChecks name: 'Deploy to staging', status: 'IN_PROGRESS'
                 sh "docker run -d --rm -p 8765:8080 --name calculator jbetoreyes/calculator:${currentBuild.number}"
                 publishChecks name: 'Deploy to staging'
@@ -95,8 +96,9 @@ pipeline {
         }
         stage ("Acceptance test") {
             steps {
+                script { failedStage = env.STAGE_NAME }
                 publishChecks name: 'Acceptance test', status: 'IN_PROGRESS'
-                sleep 60
+                sleep 300
                 sh "chmod +x acceptance_test.sh && ./acceptance_test.sh"
                 publishChecks name: 'Acceptance test'
                 script { stagesMap.remove(0) }
