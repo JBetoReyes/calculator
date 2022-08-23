@@ -88,7 +88,7 @@ pipeline {
         failure {
             script {
                 stagesMap.each { value ->
-                    publishChecks name: "${value}", conclusion: 'CANCELLED', status: 'COMPLETED'
+                    publishChecks name: "${value}", conclusion: 'CANCELED', status: 'COMPLETED'
                 }
             }
             publishChecks name: "${failedStage}", conclusion: 'FAILURE',  status: 'COMPLETED'
