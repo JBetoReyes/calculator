@@ -114,6 +114,13 @@ pipeline {
             }
             publishChecks name: "${failedStage}", conclusion: 'FAILURE',  status: 'COMPLETED'
         }
+        aborted {
+            script {
+                stagesMap.each { value ->
+                    publishChecks name: "${value}", conclusion: 'CANCELED', status: 'COMPLETED'
+                }
+            }
+        }
         always {
             sh "docker stop calculator"
         }
