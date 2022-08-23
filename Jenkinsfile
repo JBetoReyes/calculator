@@ -1,31 +1,47 @@
+def stagesMap = [
+    'Compile',
+    'Unit Test',
+    'Code coverage',
+    'Package',
+    'Docker build',
+    'Docker push',
+    'Deploy to staging',
+    'Acceptance test',
+]
+
 pipeline {
-    agent {
-        docker { image 'amazoncorretto:11-alpine-jdk' }
-    }
+    agent any
     options { timeout(time: 5) }
     stages {
         stage ("Compile") {
             steps {
-                publishChecks name: 'Compile', status: 'QUEUED'
-                publishChecks name: 'Unit Test', status: 'QUEUED'
-                publishChecks name: 'Code coverage', status: 'QUEUED'
+                script {
+                    failedStage = env.STAGE_NAME
+                    stagesMap.each { value ->
+                        publishChecks name: "${value}", status: 'QUEUED'
+                    }
+                }
                 publishChecks name: 'Compile', status: 'IN_PROGRESS'
                 sh "./gradlew compileJava"
                 publishChecks name: 'Compile', title: 'Compile', summary: 'gradlew compilation',
                     text: 'running ./gradlew compileJava',
                     detailsURL: '',
                     actions: [[label:'gradlew', description:'compileJava', identifier:'gradlew']]
+                script { stagesMap.remove(0) }
             }
         }
         stage("Unit Test") {
             steps {
+                script { failedStage = env.STAGE_NAME }
                 publishChecks name: 'Unit Test', status: 'IN_PROGRESS'
                 sh "./gradlew test"
                 publishChecks name: 'Unit Test'
+                script { stagesMap.remove(0) }
             }
         }
         stage ("Code coverage") {
             steps {
+                script { failedStage = env.STAGE_NAME }
                 publishChecks name: 'Code coverage', status: 'IN_PROGRESS'
                 sh "./gradlew jacocoTestReport"
                 publishHTML (target: [
@@ -36,7 +52,70 @@ pipeline {
                 ])
                 sh "./gradlew jacocoTestCoverageVerification"
                 publishChecks name: 'Code coverage'
+                script { stagesMap.remove(0) }
             }
+        }
+        stage ("Package") {
+            steps {
+                script { failedStage = env.STAGE_NAME }
+                publishChecks name: 'Package', status: 'IN_PROGRESS'
+                sh "./gradlew build"
+                publishChecks name: 'Package'
+                script { stagesMap.remove(0) }
+            }
+        }
+        stage ("Docker build") {
+            steps {
+                script { failedStage = env.STAGE_NAME }
+                publishChecks name: 'Docker build', status: 'IN_PROGRESS'
+                sh "docker build -t jbetoreyes/calculator:${currentBuild.number} ."
+                publishChecks name: 'Docker build'
+                script { stagesMap.remove(0) }
+            }
+        }
+        stage ("Docker push") {
+            steps {
+                script { failedStage = env.STAGE_NAME }
+                publishChecks name: 'Docker push', status: 'IN_PROGRESS'
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-integration', usernameVariable: 'USER', passwordVariable: 'PASSWORD')]) {
+                  sh "docker login -u ${USER} -p ${PASSWORD}"
+                }
+                sh "docker push jbetoreyes/calculator:${currentBuild.number}"
+                publishChecks name: 'Docker push'
+                script { stagesMap.remove(0) }
+            }
+        }
+        stage ("Deploy to staging") {
+            steps {
+                script { failedStage = env.STAGE_NAME }
+                publishChecks name: 'Deploy to staging', status: 'IN_PROGRESS'
+                sh "docker run -d --rm -p 8765:8080 --name calculator jbetoreyes/calculator:${currentBuild.number}"
+                publishChecks name: 'Deploy to staging'
+                script { stagesMap.remove(0) }
+            }
+        }
+        stage ("Acceptance test") {
+            steps {
+                script { failedStage = env.STAGE_NAME }
+                publishChecks name: 'Acceptance test', status: 'IN_PROGRESS'
+                sleep 60
+                sh "chmod +x acceptance_test.sh && ./acceptance_test.sh"
+                publishChecks name: 'Acceptance test'
+                script { stagesMap.remove(0) }
+            }
+        }
+    }
+    post {
+        failure {
+            script {
+                stagesMap.each { value ->
+                    publishChecks name: "${value}", conclusion: 'CANCELED', status: 'COMPLETED'
+                }
+            }
+            publishChecks name: "${failedStage}", conclusion: 'FAILURE',  status: 'COMPLETED'
+        }
+        always {
+            sh "docker stop calculator"
         }
     }
 }
