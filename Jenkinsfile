@@ -101,5 +101,8 @@ pipeline {
             }
             publishChecks name: "${failedStage}", conclusion: 'FAILURE',  status: 'COMPLETED'
         }
+        always {
+            sh "docker stop calculator-build-${currentBuild.number}"
+        }
     }
 }
