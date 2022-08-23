@@ -4,7 +4,8 @@ def stagesMap = [
     'Code coverage',
     'Package',
     'Docker build',
-    'Docker push'
+    'Docker push',
+    'Deploy to staging'
 ]
 
 pipeline {
@@ -82,6 +83,11 @@ pipeline {
                 publishChecks name: 'Docker build'
                 script { stagesMap.remove(0) }
             }
+        }
+        stage ("Deploy to staging") {
+            publishChecks name: 'Deploy to staging', status: 'IN_PROGRESS'
+            sh 'docker run -d --rm -p 8765:8080 --name calculator:${currentBuild.number} jbetoreyes/calculator:${currentBuild.number}'
+            publishChecks name: 'Deploy to staging'
         }
     }
     post {
